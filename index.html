@@ -466,18 +466,21 @@ function draw() {
     const totalVisible = endIdx - startIdx + 1;
     const candleSpace = chartWidth / totalVisible;
 
-    let minP = Infinity, maxP = -Infinity, maxVol = 0, lowestIdx = -1;
+    let minP = Infinity, maxP = -Infinity, maxVol = 0, maxVMA = 0, lowestIdx = -1;
     for (let i = startIdx; i <= endIdx; i++) {
       const c = DATA[i];
       if (!c) continue;
       if (c.low !== undefined && c.low < minP) { minP = c.low; lowestIdx = i; }
       if (c.high !== undefined && c.high > maxP) maxP = c.high;
       if (c.volume !== undefined && c.volume > maxVol) maxVol = c.volume;
+      if (c.vma10 !== undefined && c.vma10 > maxVMA) maxVMA = c.vma10;
+      if (c.vma20 !== undefined && c.vma20 > maxVMA) maxVMA = c.vma20;
     }
     if (minP === Infinity || maxP === -Infinity) { minP = 0; maxP = 100; }
     const padding = (maxP - minP) * 0.08;
     minP -= padding; maxP += padding;
     if (maxVol === 0 || !isFinite(maxVol)) maxVol = 1;
+    if (maxVMA === 0 || !isFinite(maxVMA)) maxVMA = 1;
 
     // Holding highlight
     if (position) {
@@ -525,16 +528,16 @@ function draw() {
       ctx.fillRect(x, y, bw, h);
     }
 
-    // VMA lines
+    // VMA lines (use independent maxVMA scale so they don't get squished by volume outliers)
     function drawVMA(key, color, lw, dash) {
       ctx.strokeStyle = color; ctx.lineWidth = lw;
       if (dash) ctx.setLineDash([3, 2]); else ctx.setLineDash([]);
       ctx.beginPath(); let started = false;
       for (let i = startIdx; i <= endIdx; i++) {
         const c = DATA[i];
-        if (!c || c[key] === undefined || c[key] <= 0 || maxVol <= 0) continue;
+        if (!c || c[key] === undefined || c[key] <= 0 || maxVMA <= 0) continue;
         const cx = chartLeft + (i - startIdx) * candleSpace + candleSpace / 2;
-        const vy = volBottom - (c[key] / maxVol) * volHeight;
+        const vy = volBottom - (c[key] / maxVMA) * volHeight;
         if (!started) { ctx.moveTo(cx, vy); started = true; }
         else ctx.lineTo(cx, vy);
       }
