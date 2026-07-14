@@ -249,13 +249,6 @@
     <span id="slider-val"></span>
   </div>
 
-  <div id="zoom-row">
-    <label>Zoom:</label>
-    <button class="small-btn" onclick="zoomOut()">-</button>
-    <span id="zoom-val">80</span>
-    <button class="small-btn" onclick="zoomIn()">+</button>
-  </div>
-
   <div id="nav-row">
     <button class="nav-btn" onclick="jumpDays(-20)">-20d</button>
     <button class="nav-btn" onclick="jumpDays(-5)">-5d</button>
@@ -402,8 +395,6 @@ async function loadStockData(code, name) {
   document.getElementById('slider').min = START_INDEX;
   document.getElementById('slider').max = maxCursor;
   document.getElementById('slider').value = cursor;
-  document.getElementById('zoom-val').textContent = candlesVisible;
-
   updateUI(); draw();
   document.body.classList.remove('loading');
   showToast(code + '.HK loaded (' + arr.length + 'd: ' + arr[0].date + '~' + arr[arr.length-1].date + ')');
@@ -766,22 +757,6 @@ function resetAll() {
   updateUI(); draw();
 }
 
-function zoomIn() {
-  if (!CANDLES_MAX || isNaN(CANDLES_MAX)) { showToast('No data'); return; }
-  if (candlesVisible <= CANDLES_MIN) { showToast('Max zoom'); return; }
-  candlesVisible = Math.max(CANDLES_MIN, candlesVisible - 20);
-  document.getElementById('zoom-val').textContent = candlesVisible;
-  draw();
-}
-
-function zoomOut() {
-  if (!CANDLES_MAX || isNaN(CANDLES_MAX)) { showToast('No data'); return; }
-  if (candlesVisible >= CANDLES_MAX) { showToast('Min zoom'); return; }
-  candlesVisible = Math.min(CANDLES_MAX, candlesVisible + 20);
-  document.getElementById('zoom-val').textContent = candlesVisible;
-  draw();
-}
-
 // ===== STOCK SEARCH =====
 const searchBox = document.getElementById('search-box');
 const dropdown = document.getElementById('dropdown');
@@ -857,7 +832,6 @@ canvas.addEventListener('touchmove', function(e) {
     const clamped = Math.max(CANDLES_MIN, Math.min(CANDLES_MAX, newVisible));
     if (clamped !== candlesVisible) {
       candlesVisible = clamped;
-      document.getElementById('zoom-val').textContent = candlesVisible;
       draw();
     }
   }
