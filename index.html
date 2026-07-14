@@ -968,6 +968,7 @@ document.getElementById('slider').addEventListener('input', function(e) {
 });
 
 // ===== INIT =====
+computeIndicators(DATA);
 window.addEventListener('resize', resizeCanvas);
 window.addEventListener('orientationchange', function() {
   setTimeout(resizeCanvas, 300);
