@@ -59,6 +59,15 @@
     font-size: 11px; color: #8b949e; min-width: 55px; text-align: center;
     font-family: monospace; white-space: nowrap;
   }
+  .random-btn {
+    width: 32px; height: 32px; border-radius: 6px;
+    border: 1px solid #30363d; background: #21262d;
+    color: #c9d1d9; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0;
+  }
+  .random-btn:active { background: #30363d; }
 
   /* Stats Row */
   #stats {
@@ -221,6 +230,7 @@
       <input type="text" id="search-box" placeholder="Search HK stocks..." autocomplete="off" inputmode="search">
       <div id="dropdown"></div>
     </div>
+    <button class="random-btn" onclick="randomStock()" title="Random stock">🎲</button>
     <span id="current-stock">0700.HK</span>
   </div>
 
@@ -952,6 +962,14 @@ function toggleLog() {
   const log = document.getElementById('trade-log');
   toggle.classList.toggle('open');
   log.classList.toggle('open');
+}
+
+function randomStock() {
+  const idx = Math.floor(Math.random() * STOCK_LIST.length);
+  const stock = STOCK_LIST[idx];
+  loadStockData(stock.c, stock.n);
+  document.getElementById('search-box').value = '';
+  document.getElementById('dropdown').style.display = 'none';
 }
 
 function showToast(msg) {
